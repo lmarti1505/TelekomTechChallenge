@@ -1,0 +1,1441 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Telekom Tech Challenge</title>
+  <style>
+    :root {
+      --brand: #e20074;
+      --brand-dark: #b0005a;
+      --brand-soft: #ffe6f3;
+      --bg: #f6f6f8;
+      --card: #ffffff;
+      --text: #17171a;
+      --muted: #686878;
+      --success: #12805c;
+      --warning: #a15c00;
+      --danger: #b42318;
+      --border: #e7e7ee;
+      --shadow: 0 12px 32px rgba(0,0,0,.08);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, var(--brand-soft), transparent 30rem),
+        linear-gradient(180deg, #fff, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; }
+
+    .app-shell {
+      width: min(1100px, 100%);
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 0 22px;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      object-fit: contain;
+      background: var(--brand);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 6px;
+    }
+
+    .brand-title {
+      min-width: 0;
+    }
+
+    .brand-title h1 {
+      margin: 0;
+      font-size: clamp(1.35rem, 5vw, 2.4rem);
+      line-height: 1.05;
+    }
+
+    .brand-title p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 15px;
+      font-weight: 750;
+      cursor: pointer;
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 3px 12px rgba(0,0,0,.07);
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      touch-action: manipulation;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,.1); }
+    .btn:active { transform: translateY(0); }
+    .btn.primary { background: var(--brand); color: white; }
+    .btn.secondary { background: var(--brand-soft); color: var(--brand-dark); }
+    .btn.ghost { background: transparent; box-shadow: none; border: 1px solid var(--border); }
+    .btn.danger { background: #fff2f0; color: var(--danger); }
+    .btn.full { width: 100%; }
+    .btn[disabled] { opacity: .55; cursor: not-allowed; transform: none; }
+
+    .hero-card,
+    .panel,
+    .challenge-card {
+      background: rgba(255,255,255,.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.8);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      padding: 14px;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid var(--border);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.35rem;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    .progress-wrap {
+      display: grid;
+      gap: 7px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: .92rem;
+      color: var(--muted);
+    }
+
+    .progress-bar {
+      height: 12px;
+      background: #ececf2;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--brand), var(--brand-dark));
+      border-radius: 999px;
+      width: 0%;
+      transition: width .3s ease;
+    }
+
+    .completion-box {
+      display: none;
+      padding: 18px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: white;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .completion-box.show { display: grid; gap: 8px; }
+    .completion-box h2 { margin: 0; font-size: 1.4rem; }
+    .completion-box p { margin: 0; opacity: .95; }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 22px 0 12px;
+    }
+
+    .section-title h2 { margin: 0; font-size: 1.25rem; }
+    .section-title p { margin: 0; color: var(--muted); font-size: .92rem; }
+
+    .challenge-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .challenge-card {
+      position: relative;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      min-height: 220px;
+      overflow: hidden;
+    }
+
+    .challenge-card.done::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 2px solid rgba(18,128,92,.35);
+      border-radius: var(--radius);
+      pointer-events: none;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .icon-badge {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: var(--brand-soft);
+      color: var(--brand-dark);
+      font-size: 1.35rem;
+    }
+
+    .status-pill,
+    .difficulty-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      font-size: .77rem;
+      font-weight: 800;
+      padding: 6px 9px;
+      background: #f0f0f5;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .status-pill.done { background: #e7f7ef; color: var(--success); }
+    .status-pill.open { background: #fff5dc; color: var(--warning); }
+    .difficulty-pill.easy { background: #e7f7ef; color: var(--success); }
+    .difficulty-pill.medium { background: #fff5dc; color: var(--warning); }
+    .difficulty-pill.hard { background: #fff2f0; color: var(--danger); }
+
+    .challenge-card h3 { margin: 0; font-size: 1.08rem; }
+    .challenge-card p { margin: 0; color: var(--muted); line-height: 1.45; }
+
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: auto;
+    }
+
+    .panel {
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .challenge-layout {
+      display: grid;
+      gap: 14px;
+    }
+
+    .challenge-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .challenge-header h2 { margin: 0; }
+
+    .story-box {
+      padding: 15px;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid var(--border);
+      line-height: 1.5;
+    }
+
+    .question-box {
+      display: grid;
+      gap: 12px;
+    }
+
+    .code-block,
+    pre {
+      margin: 0;
+      background: #17171a;
+      color: #f6f6f8;
+      padding: 14px;
+      border-radius: 16px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: .9rem;
+      line-height: 1.5;
+      white-space: pre;
+    }
+
+    .choice-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .choice {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 13px 14px;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 650;
+      line-height: 1.35;
+    }
+
+    .choice:hover { border-color: var(--brand); }
+    .choice.selected { border-color: var(--brand); background: var(--brand-soft); }
+    .choice.correct { border-color: var(--success); background: #e7f7ef; }
+    .choice.wrong { border-color: var(--danger); background: #fff2f0; }
+
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 15px;
+      font: inherit;
+      background: #fff;
+    }
+
+    input[type="text"]:focus {
+      outline: 3px solid color-mix(in srgb, var(--brand) 25%, transparent);
+      border-color: var(--brand);
+    }
+
+    .feedback {
+      display: none;
+      padding: 14px;
+      border-radius: 16px;
+      font-weight: 700;
+    }
+
+    .feedback.show { display: block; }
+    .feedback.success { background: #e7f7ef; color: var(--success); }
+    .feedback.error { background: #fff2f0; color: var(--danger); }
+    .feedback.info { background: var(--brand-soft); color: var(--brand-dark); }
+
+    .reaction-zone {
+      display: grid;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .attack-event {
+      min-height: 104px;
+      display: grid;
+      place-items: center;
+      border-radius: 20px;
+      border: 2px dashed var(--brand);
+      padding: 18px;
+      background: var(--brand-soft);
+      font-weight: 850;
+      font-size: clamp(1.05rem, 4vw, 1.45rem);
+    }
+
+    .reaction-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+    }
+
+    .favorite-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .favorite-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      background: #fff;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .favorite-card:hover {
+      border-color: var(--brand);
+    }
+
+    .favorite-card:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--brand) 30%, transparent);
+    }
+
+    .favorite-card input { margin-top: 4px; accent-color: var(--brand); }
+    .favorite-card.selected { border-color: var(--brand); background: var(--brand-soft); }
+    .favorite-card strong { display: block; color: var(--text); }
+    .favorite-card span { display: block; color: var(--muted); margin-top: 3px; font-size: .9rem; }
+
+    .role-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .role-item {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .role-item strong { display: block; }
+    .role-item span { color: var(--muted); display: block; margin-top: 4px; }
+
+    .small-note {
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.45;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: .85rem;
+      padding: 24px 0 8px;
+    }
+
+    @media (max-width: 860px) {
+      .challenge-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 620px) {
+      .app-shell { padding: 14px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .nav-actions { width: 100%; justify-content: stretch; }
+      .nav-actions .btn { flex: 1 1 auto; }
+      .challenge-grid { grid-template-columns: 1fr; }
+      .favorite-grid { grid-template-columns: 1fr; }
+      .reaction-buttons { grid-template-columns: 1fr; }
+      .challenge-header { align-items: flex-start; flex-direction: column; }
+      .challenge-header .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <div id="brandLogo" class="brand-logo">T</div>
+        <div class="brand-title">
+          <h1 id="appTitle">Telekom Tech Challenge</h1>
+          <p id="appSubtitle">Mini-CTF und Coding-Games für die Jobmesse</p>
+        </div>
+      </div>
+      <nav class="nav-actions">
+        <button class="btn ghost" type="button" onclick="showView('home')">Startseite</button>
+        <button id="roleNavButton" class="btn secondary" type="button" onclick="showView('favorites')">Entdecke deine Rollen</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="homeView" class="view active">
+        <div class="hero-card">
+          <div class="stats-grid">
+            <div class="stat">
+              <strong id="scoreNow">0</strong>
+              <span>aktuelle Punkte</span>
+            </div>
+            <div class="stat">
+              <strong id="scoreMax">0</strong>
+              <span>maximal möglich</span>
+            </div>
+            <div class="stat">
+              <strong id="doneCount">0</strong>
+              <span>gespielt</span>
+            </div>
+            <div class="stat">
+              <strong id="missingCount">0</strong>
+              <span>offen</span>
+            </div>
+          </div>
+
+          <div class="progress-wrap">
+            <div class="progress-label">
+              <span>Fortschritt Messetag</span>
+              <span id="progressText">0%</span>
+            </div>
+            <div class="progress-bar" aria-label="Fortschritt">
+              <div id="progressFill" class="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="completionBox" class="completion-box">
+          <h2 id="completionTitle">Glückwunsch!</h2>
+          <p id="completionText"></p>
+          <button class="btn" type="button" onclick="showView('favorites')">Entdecke deine Rollen</button>
+        </div>
+
+        <div class="section-title">
+          <div>
+            <h2>Verfügbare Spiele</h2>
+            <p>Die Auswahl kommt aus der Konfiguration.</p>
+          </div>
+          <button class="btn danger" type="button" onclick="resetProgress()">Fortschritt zurücksetzen</button>
+        </div>
+
+        <div id="challengeGrid" class="challenge-grid"></div>
+      </section>
+
+      <section id="challengeView" class="view">
+        <div class="panel challenge-layout">
+          <div class="challenge-header">
+            <div>
+              <span id="challengeDifficulty" class="difficulty-pill medium">Medium</span>
+              <h2 id="challengeTitle">Challenge</h2>
+              <p id="challengeMeta" class="small-note"></p>
+            </div>
+            <button class="btn ghost" type="button" onclick="abortChallenge()">Zur Startseite</button>
+          </div>
+
+          <div id="challengeStory" class="story-box"></div>
+          <div id="challengeContent" class="question-box"></div>
+          <div id="challengeFeedback" class="feedback"></div>
+          <div id="challengeActions" class="nav-actions"></div>
+        </div>
+      </section>
+
+      <section id="favoritesView" class="view">
+        <div class="panel">
+          <div class="challenge-header">
+            <div>
+              <h2>Entdecke deine Rollen</h2>
+              <p class="small-note">Wähle bis zu 3 Spiele aus. Die Auswahl basiert nur auf den in der Konfiguration aktivierten Spielen.</p>
+            </div>
+             <a href="https://careers.telekom.com/de" target="_blank"><button class="btn ghost" type="button" onclick="">Hier findest du alle Rollen!</button></a>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div id="favoriteGrid" class="favorite-grid"></div>
+          <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn primary" type="button" onclick="renderRolesFromFavorites()">Rollen anzeigen</button>
+            <button class="btn ghost" type="button" onclick="clearFavorites()">Auswahl löschen</button>
+          </div>
+          <p id="favoriteHint" class="small-note"></p>
+        </div>
+
+        <div class="panel">
+          <h2 style="margin-top: 0;">Mögliche passende Job-Rollen</h2>
+          <div id="roleList" class="role-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer-note">
+      Demo für GitHub Pages · Punkte werden lokal im Browser gespeichert
+    </footer>
+  </div>
+
+  <script>
+    /**********************************************************************
+     * CONFIG
+     * Hier kannst du pro Messetag festlegen, welche Spiele aktiv sind,
+     * wie viele Punkte sie geben, welche Farbe/Logo genutzt wird und
+     * welche Rollen aus Favoriten abgeleitet werden.
+     **********************************************************************/
+    const CONFIG = {
+      companyName: "Telekom",
+      appTitle: "Telekom Tech Challenge",
+      appSubtitle: "Mini-CTF und Coding-Games für die Jobmesse",
+      brandColor: "#e20074",
+      brandDarkColor: "#b0005a",
+      logoUrl: "telekom-logo.svg", // Beispiel: "assets/logo.png". Leer lassen für T-Kachel.
+      completionSlogan: "Stark gemacht — du hast das Netz gerettet!",
+      cookiePrefix: "telekom_tech_challenge_v1",
+
+      // Sortierung der aktivierten Spiele.
+      // Varianten:
+      // ["easy", "medium", "hard"] = leicht zuerst
+      // ["hard", "medium", "easy"] = schwer zuerst
+      difficultyOrder: ["easy", "medium", "hard"],
+
+      enabledChallengeIds: [
+        "bug-hunt",
+        "code-output",
+        "stop-cyberattack",
+        "code-or-fake",
+        "hack-router",
+        "logfile-analysis",
+        "html-flag"
+      ],
+
+      challenges: [
+        {
+          id: "bug-hunt",
+          title: "Bug Hunt: Find den Fehler im Code",
+          shortTitle: "Bug Hunt",
+          icon: "🐞",
+          difficulty: "medium",
+          points: 120,
+          topic: "Softwareentwicklung",
+          description: "Finde den Fehler in einem kurzen Code-Snippet.",
+          jobTags: ["software", "backend", "testing", "quality"]
+        },
+        {
+          id: "code-output",
+          title: "Code Analysis: Was wird der Code ausgeben?",
+          shortTitle: "Code Analysis",
+          icon: "🧠",
+          difficulty: "easy",
+          points: 90,
+          topic: "Coding Basics",
+          description: "Analysiere den Code, ohne ihn auszuführen.",
+          jobTags: ["software", "backend", "data"]
+        },
+        {
+          id: "stop-cyberattack",
+          title: "Reaktionsspiel: Stoppe den Cyberangriff",
+          shortTitle: "Stoppe den Angriff",
+          icon: "🛡️",
+          difficulty: "hard",
+          points: 180,
+          topic: "Cybersecurity",
+          description: "Entscheide schnell: blockieren, erlauben oder untersuchen.",
+          jobTags: ["security", "soc", "operations"]
+        },
+        {
+          id: "code-or-fake",
+          title: "Code oder Fake? Quiz",
+          shortTitle: "Code oder Fake?",
+          icon: "✅",
+          difficulty: "easy",
+          points: 80,
+          topic: "Tech-Wissen",
+          description: "Entscheide, ob eine technische Aussage stimmt.",
+          jobTags: ["software", "network", "security"]
+        },
+        {
+          id: "hack-router",
+          title: "Mini-CTF: Hack den Router",
+          shortTitle: "Hack den Router",
+          icon: "📡",
+          difficulty: "hard",
+          points: 200,
+          topic: "Netzwerk & Security",
+          description: "Finde die unsichere Router-Konfiguration.",
+          jobTags: ["network", "security", "cloud"]
+        },
+        {
+          id: "logfile-analysis",
+          title: "Logfile analysieren",
+          shortTitle: "Logfile Analyse",
+          icon: "📄",
+          difficulty: "medium",
+          points: 130,
+          topic: "Monitoring & Betrieb",
+          description: "Finde im Log die Ursache für die Störung.",
+          jobTags: ["devops", "sre", "operations", "network"]
+        },
+        {
+          id: "html-flag",
+          title: "HTML-Flag finden",
+          shortTitle: "HTML-Flag",
+          icon: "🔎",
+          difficulty: "easy",
+          points: 70,
+          topic: "Web Basics",
+          description: "Die Flag ist auf der Seite versteckt. Schau genau hin.",
+          jobTags: ["frontend", "software", "security"]
+        }
+      ],
+
+      roles: {
+        software: {
+          title: "Software Developer / Backend Engineer",
+          description: "Passt, wenn dir Coding, Debugging, APIs und saubere Logik Spaß machen."
+        },
+        frontend: {
+          title: "Frontend Developer",
+          description: "Passt, wenn dich Weboberflächen, UX und Browser-Technologien interessieren."
+        },
+        backend: {
+          title: "Backend Engineer",
+          description: "Passt, wenn du gerne Services, Datenflüsse und robuste Schnittstellen baust."
+        },
+        testing: {
+          title: "QA Engineer / Test Automation Engineer",
+          description: "Passt, wenn du gerne Fehler findest, Qualität sicherst und Tests automatisierst."
+        },
+        quality: {
+          title: "Software Quality Engineer",
+          description: "Passt, wenn du technische Qualität, Clean Code und stabile Releases wichtig findest."
+        },
+        data: {
+          title: "Data Engineer / Data Analyst",
+          description: "Passt, wenn du gerne Muster erkennst, Daten analysierst und daraus Entscheidungen ableitest."
+        },
+        security: {
+          title: "Cybersecurity Engineer",
+          description: "Passt, wenn du Schwachstellen, sichere Systeme und Angriffsabwehr spannend findest."
+        },
+        soc: {
+          title: "SOC Analyst",
+          description: "Passt, wenn du Security-Events bewerten und Angriffe früh erkennen möchtest."
+        },
+        operations: {
+          title: "IT Operations Engineer",
+          description: "Passt, wenn du Systeme stabil halten und Störungen strukturiert lösen möchtest."
+        },
+        network: {
+          title: "Network Engineer",
+          description: "Passt, wenn dich Routing, DNS, 5G, Infrastruktur und Konnektivität interessieren."
+        },
+        cloud: {
+          title: "Cloud Engineer",
+          description: "Passt, wenn du Infrastruktur, Plattformen, Skalierung und Automatisierung magst."
+        },
+        devops: {
+          title: "DevOps Engineer",
+          description: "Passt, wenn du Entwicklung, Betrieb, CI/CD und Monitoring verbinden möchtest."
+        },
+        sre: {
+          title: "Site Reliability Engineer",
+          description: "Passt, wenn du Zuverlässigkeit, Observability und Incident Response spannend findest."
+        }
+      }
+    };
+
+    const state = {
+      currentChallengeId: null,
+      selectedAnswer: null,
+      reaction: {
+        active: false,
+        index: 0,
+        score: 0,
+        answered: 0,
+        currentEvent: null
+      }
+    };
+
+    const reactionEvents = [
+      { label: "Phishing-Mail mit Login-Link", action: "block" },
+      { label: "Normale Kund:innen-Anfrage", action: "allow" },
+      { label: "Unbekannte IP mit 500 Login-Versuchen", action: "investigate" },
+      { label: "Geplantes Software-Update", action: "allow" },
+      { label: "DDoS-Traffic auf öffentlichen Dienst", action: "block" }
+    ];
+
+    const choiceChallenges = {
+      "bug-hunt": {
+        story: "Ein kleiner Service soll alle Nutzer:innen ausgeben. Auf der Messe hat jemand den Code geändert und jetzt crasht das Programm.",
+        code: `const users = ["Anna", "Max", "Lukas"];
+
+for (let i = 0; i <= users.length; i++) {
+  console.log(users[i].toUpperCase());
+}`,
+        question: "Wo liegt der Fehler?",
+        choices: [
+          "Die Schleife läuft einmal zu weit, weil i <= users.length genutzt wird.",
+          "toUpperCase() darf in JavaScript nicht auf Strings genutzt werden.",
+          "Arrays starten in JavaScript bei 1.",
+          "console.log() verändert den Wert im Array."
+        ],
+        correctIndex: 0,
+        successText: "Richtig. Beim letzten Durchlauf ist users[i] undefined. Besser: i < users.length."
+      },
+
+      "code-output": {
+        story: "Du analysierst einen kleinen Code-Ausschnitt. Was steht am Ende in der Konsole?",
+        code: `let score = 0;
+const tasks = [10, 20, 30];
+
+tasks.forEach((points, index) => {
+  if (index < 2) score += points;
+});
+
+console.log(score);`,
+        question: "Was wird ausgegeben?",
+        choices: ["0", "10", "30", "60"],
+        correctIndex: 2,
+        successText: "Richtig. Es werden nur Index 0 und 1 addiert: 10 + 20 = 30."
+      },
+
+      "code-or-fake": {
+        story: "Entscheide, welche Aussage fachlich korrekt ist.",
+        code: "Aussagen zu Web, Security und Netzwerk-Grundlagen",
+        question: "Welche Aussage ist korrekt?",
+        choices: [
+          "Ein Hash ist dasselbe wie Verschlüsselung.",
+          "DNS übersetzt Domainnamen in IP-Adressen.",
+          "HTTP ist immer verschlüsselt.",
+          "Ein Load Balancer speichert grundsätzlich alle Passwörter."
+        ],
+        correctIndex: 1,
+        successText: "Richtig. DNS übersetzt zum Beispiel einen Domainnamen in eine IP-Adresse."
+      },
+
+      "hack-router": {
+        story: "Ein fiktiver Router soll Traffic ins Internet weiterleiten. Die Default-Route ist aber falsch gesetzt.",
+        code: `interface eth0
+  ip address 10.0.0.1/24
+
+interface eth1
+  ip address 10.0.1.1/24
+
+route 0.0.0.0/0 via 10.0.3.254
+
+Hinweis: Das Gateway befindet sich im Netz 10.0.1.0/24.`,
+        question: "Welche korrigierte Route ist plausibel?",
+        choices: [
+          "route 0.0.0.0/0 via 10.0.1.254",
+          "route 0.0.0.0/0 via 192.168.178.1",
+          "route 127.0.0.1/0 via 10.0.3.254",
+          "route 10.0.3.254/24 via 0.0.0.0"
+        ],
+        correctIndex: 0,
+        successText: "Richtig. Das Gateway muss in einem erreichbaren Netz liegen, hier 10.0.1.0/24."
+      },
+
+      "logfile-analysis": {
+        story: "Ein Dienst ist nicht erreichbar. Im Logfile findest du den entscheidenden Hinweis.",
+        code: `10:01:12 INFO  User login successful
+10:02:43 INFO  DNS lookup for service.telekom.local
+10:02:44 ERROR DNS resolution failed: NXDOMAIN
+10:03:01 WARN  Retrying request
+10:03:03 ERROR Service unavailable`,
+        question: "Welche Komponente verursacht wahrscheinlich den Fehler?",
+        choices: ["DNS", "GPU", "Bluetooth", "Druckerwarteschlange"],
+        correctIndex: 0,
+        successText: "Richtig. NXDOMAIN deutet darauf hin, dass der Name nicht aufgelöst werden konnte."
+      },
+
+      "html-flag": {
+        story: "Die Flag ist auf dieser Seite versteckt. Tipp: Bei Web-Challenges lohnt sich manchmal ein Blick in den Quelltext.",
+        code: `<!-- FLAG{inspect_the_source} -->
+<section>
+  <h1>Willkommen zur Web-Challenge</h1>
+  <p>Manche Hinweise sind nicht direkt sichtbar.</p>
+</section>`,
+        question: "Welche Flag ist versteckt?",
+        choices: [
+          "FLAG{inspect_the_source}",
+          "FLAG{open_the_router}",
+          "FLAG{dns_is_down}",
+          "FLAG{magenta_power}"
+        ],
+        correctIndex: 0,
+        successText: "Richtig. In einer echten Variante würdest du die Flag im HTML-Kommentar verstecken."
+      }
+    };
+
+    function difficultyRank(difficulty) {
+      const order = CONFIG.difficultyOrder || ["easy", "medium", "hard"];
+      const rank = order.indexOf(difficulty);
+      return rank === -1 ? 999 : rank;
+    }
+
+    function getEnabledChallenges() {
+      const challengeById = new Map(CONFIG.challenges.map(challenge => [challenge.id, challenge]));
+
+      return CONFIG.enabledChallengeIds
+        .map((id, index) => ({ challenge: challengeById.get(id), index }))
+        .filter(item => Boolean(item.challenge))
+        .sort((a, b) => {
+          return difficultyRank(a.challenge.difficulty) - difficultyRank(b.challenge.difficulty)
+            || a.index - b.index;
+        })
+        .map(item => item.challenge);
+    }
+
+    function getCookie(name) {
+      const prefix = encodeURIComponent(name) + "=";
+      const parts = document.cookie.split(";").map(part => part.trim());
+      const found = parts.find(part => part.startsWith(prefix));
+      return found ? decodeURIComponent(found.slice(prefix.length)) : null;
+    }
+
+    function setCookie(name, value, days = 7) {
+      const expires = new Date(Date.now() + days * 864e5).toUTCString();
+      document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+    }
+
+    function deleteCookie(name) {
+      document.cookie = `${encodeURIComponent(name)}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+    }
+
+    function progressStorageName() {
+      return `${CONFIG.cookiePrefix}_progress`;
+    }
+
+    function favoriteStorageName() {
+      return `${CONFIG.cookiePrefix}_favorites`;
+    }
+
+    function readStoredValue(name) {
+      try {
+        const value = localStorage.getItem(name);
+        if (value !== null) return value;
+      } catch {
+        // localStorage kann in restriktiven Browser-Modi blockiert sein.
+      }
+
+      return getCookie(name);
+    }
+
+    function writeStoredValue(name, value) {
+      try {
+        localStorage.setItem(name, value);
+      } catch {
+        // Fallback läuft über Cookie.
+      }
+
+      setCookie(name, value, 7);
+    }
+
+    function removeStoredValue(name) {
+      try {
+        localStorage.removeItem(name);
+      } catch {
+        // Fallback läuft über Cookie-Löschung.
+      }
+
+      deleteCookie(name);
+    }
+
+    function loadProgress() {
+      try {
+        return JSON.parse(readStoredValue(progressStorageName()) || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function saveProgress(progress) {
+      writeStoredValue(progressStorageName(), JSON.stringify(progress));
+    }
+
+    function loadFavorites() {
+      try {
+        const parsed = JSON.parse(readStoredValue(favoriteStorageName()) || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveFavorites(favorites) {
+      writeStoredValue(favoriteStorageName(), JSON.stringify(favorites));
+    }
+
+    function maxScore() {
+      return getEnabledChallenges().reduce((sum, challenge) => sum + challenge.points, 0);
+    }
+
+    function currentScore() {
+      const progress = loadProgress();
+
+      return getEnabledChallenges().reduce((sum, challenge) => {
+        return sum + (progress[challenge.id]?.completed ? progress[challenge.id].points : 0);
+      }, 0);
+    }
+
+    function completedCount() {
+      const progress = loadProgress();
+      return getEnabledChallenges().filter(challenge => progress[challenge.id]?.completed).length;
+    }
+
+    function difficultyLabel(difficulty) {
+      const labels = { easy: "Easy", medium: "Medium", hard: "Hard" };
+      return labels[difficulty] || difficulty;
+    }
+
+    function applyBranding() {
+      document.documentElement.style.setProperty("--brand", CONFIG.brandColor);
+      document.documentElement.style.setProperty("--brand-dark", CONFIG.brandDarkColor);
+      document.getElementById("appTitle").textContent = CONFIG.appTitle;
+      document.getElementById("appSubtitle").textContent = CONFIG.appSubtitle;
+
+      const logo = document.getElementById("brandLogo");
+
+      if (CONFIG.logoUrl) {
+        logo.innerHTML = `<img src="${CONFIG.logoUrl}" alt="${CONFIG.companyName} Logo">`;
+      } else {
+        logo.textContent = CONFIG.companyName.slice(0, 1).toUpperCase();
+      }
+    }
+
+    function renderHome() {
+      const challenges = getEnabledChallenges();
+      const progress = loadProgress();
+      const done = completedCount();
+      const total = challenges.length;
+      const missing = total - done;
+      const score = currentScore();
+      const possible = maxScore();
+      const percentage = total === 0 ? 0 : Math.round((done / total) * 100);
+
+      document.getElementById("scoreNow").textContent = score;
+      document.getElementById("scoreMax").textContent = possible;
+      document.getElementById("doneCount").textContent = `${done}/${total}`;
+      document.getElementById("missingCount").textContent = missing;
+      document.getElementById("progressText").textContent = `${percentage}%`;
+      document.getElementById("progressFill").style.width = `${percentage}%`;
+
+      const completionBox = document.getElementById("completionBox");
+      const completionText = document.getElementById("completionText");
+
+      if (total > 0 && done === total) {
+        completionBox.classList.add("show");
+        completionText.textContent = `${CONFIG.completionSlogan} Gesamtpunktzahl: ${score} von ${possible} Punkten.`;
+      } else {
+        completionBox.classList.remove("show");
+      }
+
+      const grid = document.getElementById("challengeGrid");
+
+      grid.innerHTML = challenges.map(challenge => {
+        const isDone = Boolean(progress[challenge.id]?.completed);
+        const achieved = progress[challenge.id]?.points || 0;
+
+        return `
+          <article class="challenge-card ${isDone ? "done" : ""}">
+            <div class="card-top">
+              <div class="icon-badge">${challenge.icon}</div>
+              <span class="status-pill ${isDone ? "done" : "open"}">${isDone ? "Erledigt" : "Offen"}</span>
+            </div>
+            <div>
+              <h3>${challenge.title}</h3>
+              <p>${challenge.description}</p>
+            </div>
+            <div class="card-meta">
+              <span class="difficulty-pill ${challenge.difficulty}">${difficultyLabel(challenge.difficulty)}</span>
+              <span class="status-pill">${challenge.points} Punkte</span>
+              ${isDone ? `<span class="status-pill done">+${achieved}</span>` : ""}
+            </div>
+            <button class="btn primary full" type="button" onclick="startChallenge('${challenge.id}')">
+              ${isDone ? "Erneut spielen" : "Spiel starten"}
+            </button>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function showView(viewName) {
+      document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+
+      const viewMap = {
+        home: "homeView",
+        challenge: "challengeView",
+        favorites: "favoritesView"
+      };
+
+      document.getElementById(viewMap[viewName]).classList.add("active");
+
+      const roleNavButton = document.getElementById("roleNavButton");
+      if (roleNavButton) {
+        roleNavButton.hidden = viewName === "challenge";
+      }
+
+      if (viewName === "home") renderHome();
+      if (viewName === "favorites") renderFavorites();
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function startChallenge(id) {
+      state.currentChallengeId = id;
+      state.selectedAnswer = null;
+      state.reaction = { active: false, index: 0, score: 0, answered: 0, currentEvent: null };
+
+      const challenge = getEnabledChallenges().find(item => item.id === id);
+      if (!challenge) return;
+
+      document.getElementById("challengeTitle").textContent = challenge.title;
+      document.getElementById("challengeMeta").textContent = `${challenge.topic} · ${challenge.points} Punkte möglich`;
+
+      const difficulty = document.getElementById("challengeDifficulty");
+      difficulty.textContent = difficultyLabel(challenge.difficulty);
+      difficulty.className = `difficulty-pill ${challenge.difficulty}`;
+
+      document.getElementById("challengeFeedback").className = "feedback";
+      document.getElementById("challengeFeedback").textContent = "";
+      document.getElementById("challengeActions").innerHTML = "";
+
+      if (id === "stop-cyberattack") {
+        renderReactionChallenge(challenge);
+      } else {
+        renderChoiceChallenge(challenge, choiceChallenges[id]);
+      }
+
+      showView("challenge");
+    }
+
+    function renderChoiceChallenge(challenge, data) {
+      document.getElementById("challengeStory").textContent = data.story;
+
+      document.getElementById("challengeContent").innerHTML = `
+        <pre><code>${escapeHtml(data.code)}</code></pre>
+        <h3>${data.question}</h3>
+        <div class="choice-grid">
+          ${data.choices.map((choice, index) => `
+            <button class="choice" type="button" onclick="selectChoice(${index})">${escapeHtml(choice)}</button>
+          `).join("")}
+        </div>
+      `;
+
+      document.getElementById("challengeActions").innerHTML = `
+        <button class="btn primary" type="button" onclick="submitChoiceAnswer()">Antwort prüfen</button>
+        <button class="btn ghost" type="button" onclick="abortChallenge()">Zur Startseite</button>
+      `;
+    }
+
+    function selectChoice(index) {
+      state.selectedAnswer = index;
+
+      document.querySelectorAll(".choice").forEach((button, buttonIndex) => {
+        button.classList.toggle("selected", buttonIndex === index);
+      });
+    }
+
+    function submitChoiceAnswer() {
+      const id = state.currentChallengeId;
+      const challenge = getEnabledChallenges().find(item => item.id === id);
+      const data = choiceChallenges[id];
+
+      if (state.selectedAnswer === null) {
+        showFeedback("Bitte wähle zuerst eine Antwort aus.", "info");
+        return;
+      }
+
+      document.querySelectorAll(".choice").forEach((button, index) => {
+        button.disabled = true;
+
+        if (index === data.correctIndex) button.classList.add("correct");
+        if (index === state.selectedAnswer && index !== data.correctIndex) button.classList.add("wrong");
+      });
+
+      if (state.selectedAnswer === data.correctIndex) {
+        markCompleted(challenge.id, challenge.points);
+        showFeedback(`${data.successText} Du erhältst ${challenge.points} Punkte.`, "success");
+      } else {
+        const earned = Math.floor(challenge.points * 0.35);
+        markCompleted(challenge.id, earned);
+        showFeedback(`Nicht ganz. Die richtige Antwort ist markiert. Für den Versuch gibt es ${earned} Punkte.`, "error");
+      }
+
+      document.getElementById("challengeActions").innerHTML = `
+        <button class="btn primary" type="button" onclick="showView('home')">Zurück zur Startseite</button>
+      `;
+    }
+
+    function renderReactionChallenge(challenge) {
+      document.getElementById("challengeStory").textContent = "Du bist im Security Operations Center. Reagiere auf 5 Events: Blockieren, Erlauben oder Untersuchen.";
+
+      state.reaction.active = true;
+      state.reaction.index = 0;
+      state.reaction.score = 0;
+      state.reaction.answered = 0;
+
+      renderNextReactionEvent();
+    }
+
+    function renderNextReactionEvent() {
+      const event = reactionEvents[state.reaction.index];
+      state.reaction.currentEvent = event;
+
+      document.getElementById("challengeContent").innerHTML = `
+        <div class="reaction-zone">
+          <p class="small-note">Event ${state.reaction.index + 1} von ${reactionEvents.length}</p>
+          <div class="attack-event">${event.label}</div>
+          <div class="reaction-buttons">
+            <button class="btn danger" type="button" onclick="answerReaction('block')">Blockieren</button>
+            <button class="btn secondary" type="button" onclick="answerReaction('investigate')">Untersuchen</button>
+            <button class="btn ghost" type="button" onclick="answerReaction('allow')">Erlauben</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("challengeActions").innerHTML = `
+        <button class="btn ghost" type="button" onclick="abortChallenge()">Zur Startseite</button>
+      `;
+
+      showFeedback(`Zwischenstand: ${state.reaction.score}/${reactionEvents.length} korrekt`, "info");
+    }
+
+    function answerReaction(action) {
+      const event = state.reaction.currentEvent;
+      if (!event) return;
+
+      if (action === event.action) state.reaction.score += 1;
+
+      state.reaction.answered += 1;
+      state.reaction.index += 1;
+
+      if (state.reaction.index < reactionEvents.length) {
+        renderNextReactionEvent();
+        return;
+      }
+
+      const challenge = getEnabledChallenges().find(item => item.id === state.currentChallengeId);
+      const ratio = state.reaction.score / reactionEvents.length;
+      const earned = Math.round(challenge.points * ratio);
+
+      markCompleted(challenge.id, earned);
+
+      document.getElementById("challengeContent").innerHTML = `
+        <div class="story-box">
+          Du hast ${state.reaction.score} von ${reactionEvents.length} Security-Events korrekt bewertet.
+        </div>
+      `;
+
+      showFeedback(
+        `Challenge abgeschlossen. Du erhältst ${earned} von ${challenge.points} Punkten.`,
+        ratio >= .7 ? "success" : "info"
+      );
+
+      document.getElementById("challengeActions").innerHTML = `
+        <button class="btn primary" type="button" onclick="showView('home')">Zurück zur Startseite</button>
+      `;
+    }
+
+    function markCompleted(id, points) {
+      const progress = loadProgress();
+      const previousPoints = progress[id]?.points || 0;
+
+      progress[id] = {
+        completed: true,
+        points: Math.max(previousPoints, points),
+        completedAt: new Date().toISOString()
+      };
+
+      saveProgress(progress);
+    }
+
+    function showFeedback(message, type) {
+      const feedback = document.getElementById("challengeFeedback");
+      feedback.textContent = message;
+      feedback.className = `feedback show ${type}`;
+    }
+
+    function abortChallenge() {
+      state.currentChallengeId = null;
+      showView("home");
+    }
+
+    function resetProgress() {
+      const confirmed = confirm("Fortschritt und Favoriten auf diesem Gerät zurücksetzen?");
+      if (!confirmed) return;
+
+      removeStoredValue(progressStorageName());
+      removeStoredValue(favoriteStorageName());
+
+      renderHome();
+      renderFavorites();
+    }
+
+    function renderFavorites() {
+      const enabled = getEnabledChallenges();
+      const favorites = loadFavorites().filter(id => enabled.some(challenge => challenge.id === id));
+
+      saveFavorites(favorites);
+
+      const grid = document.getElementById("favoriteGrid");
+
+      grid.innerHTML = enabled.map(challenge => {
+        const selected = favorites.includes(challenge.id);
+
+        return `
+          <div
+            class="favorite-card ${selected ? "selected" : ""}"
+            role="button"
+            tabindex="0"
+            onclick="toggleFavorite('${challenge.id}')"
+            onkeydown="handleFavoriteKey(event, '${challenge.id}')"
+          >
+            <input
+              type="checkbox"
+              ${selected ? "checked" : ""}
+              aria-label="${escapeHtml(challenge.shortTitle)} auswählen"
+              onclick="event.stopPropagation()"
+              onchange="toggleFavorite('${challenge.id}', this.checked)"
+            >
+            <span>
+              <strong>${challenge.icon} ${challenge.shortTitle}</strong>
+              <span>${challenge.topic} · ${difficultyLabel(challenge.difficulty)}</span>
+            </span>
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("favoriteHint").textContent = `${favorites.length}/3 Favoriten ausgewählt.`;
+      renderRolesFromFavorites(false);
+    }
+
+    function handleFavoriteKey(event, id) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        toggleFavorite(id);
+      }
+    }
+
+    function toggleFavorite(id, forcedChecked = null) {
+      const favorites = loadFavorites();
+      const isAlreadySelected = favorites.includes(id);
+      const shouldSelect = forcedChecked === null ? !isAlreadySelected : forcedChecked;
+
+      let next = favorites.filter(item => item !== id);
+
+      if (shouldSelect) {
+        if (next.length >= 3) {
+          alert("Bitte maximal 3 Favoriten auswählen.");
+          renderFavorites();
+          return;
+        }
+
+        next.push(id);
+      }
+
+      saveFavorites(next);
+      renderFavorites();
+    }
+
+    function clearFavorites() {
+      saveFavorites([]);
+      renderFavorites();
+    }
+
+    function renderRolesFromFavorites(userTriggered = true) {
+      const enabled = getEnabledChallenges();
+      const favorites = loadFavorites();
+
+      const selectedChallenges = favorites
+        .map(id => enabled.find(challenge => challenge.id === id))
+        .filter(Boolean);
+
+      const roleList = document.getElementById("roleList");
+
+      if (selectedChallenges.length === 0) {
+        roleList.innerHTML = `
+          <div class="role-item">
+            <strong>Noch keine Favoriten gewählt</strong>
+            <span>Wähle bis zu 3 Spiele aus. Danach erscheinen passende Rollen.</span>
+          </div>
+        `;
+        return;
+      }
+
+      const tagScore = new Map();
+
+      selectedChallenges.forEach(challenge => {
+        challenge.jobTags.forEach(tag => {
+          tagScore.set(tag, (tagScore.get(tag) || 0) + 1);
+        });
+      });
+
+      const sortedTags = Array.from(tagScore.entries())
+        .sort((a, b) => b[1] - a[1])
+        .map(([tag]) => tag)
+        .filter(tag => CONFIG.roles[tag])
+        .slice(0, 5);
+
+      roleList.innerHTML = sortedTags.map(tag => {
+        const role = CONFIG.roles[tag];
+
+        return `
+          <div class="role-item">
+            <strong>${role.title}</strong>
+            <span>${role.description}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    applyBranding();
+    renderHome();
+  </script>
+</body>
+</html>
